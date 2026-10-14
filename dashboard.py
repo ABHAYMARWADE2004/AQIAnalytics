@@ -23,7 +23,7 @@ st.markdown("""
 st.markdown("""
 <div style="text-align: center; padding: 10px 0 30px 0;">
     <h1 style="font-size: 42px; margin-bottom: 0;">🌫️ AQI Analytics Dashboard</h1>
-    <p style="font-size: 16px; color: #999;">Air quality trends across Indian cities, last 30 days</p>
+       <p style="font-size: 16px; color: #999;">Hourly air quality trends across Indian cities</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -37,6 +37,7 @@ df = pd.DataFrame(records, columns=["City", "AQI", "Measured At"])
 df["Measured At"] = pd.to_datetime(df["Measured At"])
 df["Date"] = df["Measured At"].dt.date
 df["Hour"] = df["Measured At"].dt.hour
+st.caption("Data from " + df["Measured At"].min().strftime("%d %b %Y") + " to " + df["Measured At"].max().strftime("%d %b %Y"))
 
 # ===== Sidebar =====
 all_cities = sorted(df["City"].unique())
@@ -48,7 +49,8 @@ with st.sidebar:
 
     st.divider()
     st.caption("Run `python collect_data.py` to refresh. It fills in any missing hours.")
-    if st.button("🗑️ Clear All Data"):
+       confirm = st.checkbox("Yes, delete all data")
+    if st.button("🗑️ Clear All Data", disabled=not confirm):
         clear_all_readings()
         st.success("All data cleared.")
         st.rerun()
