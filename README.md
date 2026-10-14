@@ -1,13 +1,13 @@
 # AQI Analytics
 
-### Hourly Air Quality for 15 cities, stored in MySQL and explored with SQL and a dashboard
+### Hourly air quality for 15 cities, stored in MySQL and explored with SQL and a dashboard
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-Database-orange.svg)](https://www.mysql.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red.svg)](https://streamlit.io/)
 [![Pandas](https://img.shields.io/badge/Pandas-Analysis-purple.svg)](https://pandas.pydata.org/)
 
-I wanted a project where I collect the data myself instead of downloading a ready-made CSV. This one pulls hourly air quality (US AQI) for 15 cities, Keeps 30 days of it in MySQL, and then I try to Answer a few questions: Which cities have the worst air, what time of day is the worst And is it Getting Better or worse.
+I wanted a project where I collect the data myself instead of downloading a ready-made CSV. This one pulls hourly air quality (US AQI) for 15 cities, keeps 30 days of it in MySQL, and then I try to answer a few questions: which cities have the worst air, what time of day is the worst, and is it getting better or worse.
 
 Cities: Delhi, Mumbai, Kolkata, Chennai, Bangalore, Hyderabad, Pune, Ahmedabad, Jaipur, Lucknow, Patna, Bhopal, Chandigarh, Coimbatore and Aurangabad.
 
@@ -17,13 +17,13 @@ Cities: Delhi, Mumbai, Kolkata, Chennai, Bangalore, Hyderabad, Pune, Ahmedabad, 
 
 ![Share of unhealthy hours](dashboard-unhealthy.png)
 
-*Screenshots show six cities (Delhi, Kolkata, Mumbai, Pune, Bangalore, Coimbatore). The Numbers in "What I found" are across all 15.*
+*Screenshots show six cities (Delhi, Kolkata, Mumbai, Pune, Bangalore, Coimbatore). The numbers in "What I found" are across all 15.*
 
 ## What I found
 
-The Data covers the 30 days up to 9 Oct 2026, About 10,900 Hourly Readings.
+The data covers the 30 days up to 9 Oct 2026, about 10,900 hourly readings.
 
-- **Delhi is far ahead of the rest.** About 63% of its hours had an AQI above 150. Kolkata was next at 40% and Chandigarh at 38%. Five cities (Aurangabad, Bangalore, Bhopal, Coimbatore, Hyderabad) never crossed 150.
+- **Delhi is far ahead of the rest.** About 63% of its hours had an AQI above 150. Kolkata was next at about 40% and Chandigarh at 38%. Five cities (Aurangabad, Bangalore, Bhopal, Coimbatore, Hyderabad) never crossed 150.
 - **The 30-day average hides what's happening now.** Delhi's 30-day average is 149, but the last 7 days averaged 181.
 - **The last week was worse than the week before in 13 of the 15 cities.** The biggest jumps were Mumbai (95 to 159) and Delhi (125 to 181). Only Jaipur and Chennai got better.
 - **Evenings are a little worse.** Averaged over all cities, AQI is highest around 6 pm (105) and lowest around 8 am (89).
@@ -32,9 +32,9 @@ The SQL behind all of this is in [queries.sql](queries.sql).
 
 ## A problem I ran into
 
-My first version used a station-based API. After a week of collecting every day, 14 of my 15 cities showed the exact same AQI value on every single day. Air quality doesn't behave like that, so I looked at the timestamps the API sends back. Those stations hadn't updated in months, a few not since 2021. My script was saving the date I collected the data, not the time it was measured Which is why I didn't notice Earlier.
+My first version used a station-based API. After a week of collecting every day, 14 of my 15 cities showed the exact same AQI value on every single day. Air quality doesn't behave like that, so I looked at the timestamps the API sends back. Only Delhi's station was actually live. The others hadn't updated in months, some for over a year, and Pune's last reading was from 2021. My script was saving the date I collected the data, not the time it was measured, which is why I didn't notice earlier.
 
-I threw that data away and switched to Open-Meteo's air quality API. Now I save the actual measurement time, and there's a unique key on (city, time), so running the script again never creates duplicates and a missed day gets filled in next time.
+I stopped using that data and switched to Open-Meteo's air quality API. Now each reading is stored with the hour it refers to, and there's a unique key on (city, time), so running the script again never creates duplicates and a missed day gets filled in next time.
 
 ## How it works
 
@@ -58,7 +58,7 @@ Python, Pandas, MySQL, Streamlit, Requests
 AQIAnalytics/
 ├── config.py          # cities with coordinates, DB settings (password is in .env)
 ├── database.py        # MySQL helpers - save, fetch, clear
-├── collect_data.py    # Pulls hourly AQI from the API into MySQL
+├── collect_data.py    # pulls hourly AQI from the API into MySQL
 ├── dashboard.py       # the Streamlit app
 ├── queries.sql        # the SQL analysis
 └── requirements.txt
@@ -103,8 +103,9 @@ streamlit run dashboard.py    # open the dashboard
 ## Things to keep in mind
 
 - The data is model-based, not from ground stations. Open-Meteo's air quality data comes from the CAMS global model at roughly 45 km resolution, so it shows regional patterns, not what one monitor on one street would read.
-- I only have 30 days so the "last 7 days vs the 7 before" comparison covers a short window. It's not a Long-term trend.
-- The evening-peak pattern is what this dataset shows. I haven't checked it against Real Station data.
+- I only have 30 days, so the "last 7 days vs the 7 before" comparison covers a short window. It's not a long-term trend.
+- The last day (9 Oct) only has data up to 7 am, so its point on the daily trend chart is a partial day.
+- The evening-peak pattern is what this dataset shows. I haven't checked it against real station data.
 
 Air quality data: [Open-Meteo](https://open-meteo.com/) (CAMS ENSEMBLE data provider).
 
