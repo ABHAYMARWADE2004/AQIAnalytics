@@ -23,7 +23,7 @@ st.markdown("""
 st.markdown("""
 <div style="text-align: center; padding: 10px 0 30px 0;">
     <h1 style="font-size: 42px; margin-bottom: 0;">🌫️ AQI Analytics Dashboard</h1>
-       <p style="font-size: 16px; color: #999;">Hourly air quality trends across Indian cities</p>
+           <p style="font-size: 16px; color: #999;">Hourly air quality trends across Indian cities</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -49,7 +49,7 @@ with st.sidebar:
 
     st.divider()
     st.caption("Run `python collect_data.py` to refresh. It fills in any missing hours.")
-       confirm = st.checkbox("Yes, delete all data")
+    confirm = st.checkbox("Yes, delete all data")
     if st.button("🗑️ Clear All Data", disabled=not confirm):
         clear_all_readings()
         st.success("All data cleared.")
