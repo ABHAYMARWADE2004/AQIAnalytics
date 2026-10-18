@@ -6,7 +6,7 @@ SELECT city,
        CASE
          WHEN AVG(aqi) <= 50  THEN 'Good'
          WHEN AVG(aqi) <= 100 THEN 'Moderate'
-                 WHEN AVG(aqi) <= 150 THEN 'Unhealthy for Sensitive Groups'
+         WHEN AVG(aqi) <= 150 THEN 'Unhealthy for Sensitive Groups'
          WHEN AVG(aqi) <= 200 THEN 'Unhealthy'
          WHEN AVG(aqi) <= 300 THEN 'Very Unhealthy'
          ELSE 'Hazardous'
@@ -54,5 +54,5 @@ FROM (
                            AND measured_at >  @latest - INTERVAL 14 DAY THEN aqi END)) AS previous_7_days
     FROM aqi_readings
     GROUP BY city
-) t
+)
 ORDER BY change_in_aqi DESC;
